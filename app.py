@@ -1,32 +1,53 @@
+import dash
+from dash.dependencies import Input, Output
+import dash_core_components as dcc
+import dash_html_components as html
+
+import flask
+import pandas as pd
+import time
 import os
 
-from flask import (Flask, redirect, render_template, request,
-                   send_from_directory, url_for)
+server = flask.Flask("app")
+server.secret_key = os.environ.get("secret_key", "secret")
 
-app = Flask(__name__)
+df = pd.read_csv(
+    "https://raw.githubusercontent.com/plotly/datasets/master/hello-world-stock.csv"
+)
+
+app = dash.Dash("app", server=server)
+
+app.scripts.config.serve_locally = False
+dcc._js_dist[0]["external_url"] = "https://cdn.plot.ly/plotly-basic-latest.min.js"
+
+app.layout = html.Div(
+    [
+        html.H1("Stock Tickers"),
+        dcc.Dropdown(
+            id="my-dropdown",
+            options=[
+                {"label": "Tesla", "value": "TSLA"},
+                {"label": "Apple", "value": "AAPL"},
+                {"label": "Coke", "value": "COKE"},
+            ],
+            value="TSLA",
+        ),
+        dcc.Graph(id="my-graph"),
+    ],
+    className="container",
+)
 
 
-@app.route('/')
-def index():
-   print('Request for index page received')
-   return render_template('index.html')
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-@app.route('/hello', methods=['POST'])
-def hello():
-   name = request.form.get('name')
-
-   if name:
-       print('Request for hello page received with name=%s' % name)
-       return render_template('hello.html', name = name)
-   else:
-       print('Request for hello page received with no name or blank name -- redirecting')
-       return redirect(url_for('index'))
+@app.callback(Output("my-graph", "figure"), [Input("my-dropdown", "value")])
+def update_graph(selected_dropdown_value):
+    dff = df[df["Stock"] == selected_dropdown_value]
+    return {
+        "data": [
+            {"x": dff.Date, "y": dff.Close, "line": {"width": 3, "shape": "spline"}}
+        ],
+        "layout": {"margin": {"l": 30, "r": 20, "b": 30, "t": 20}},
+    }
 
 
-if __name__ == '__main__':
-   app.run()
+if __name__ == "__main__":
+    app.run_server()
