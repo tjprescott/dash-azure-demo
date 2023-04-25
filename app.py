@@ -1,27 +1,26 @@
 import dash
+from dash import html, dcc
 from dash.dependencies import Input, Output
-import dash_core_components as dcc
-import dash_html_components as html
+
+
 
 import flask
 import pandas as pd
-import time
 import os
 
-server = flask.Flask("app")
-server.secret_key = os.environ.get("secret_key", "secret")
 
 df = pd.read_csv(
     "https://raw.githubusercontent.com/plotly/datasets/master/hello-world-stock.csv"
 )
 
-app = dash.Dash("app", server=server)
+dash_app = dash.Dash("app")
+app = dash_app.server
 
-app.scripts.config.serve_locally = False
-dcc._js_dist[0]["external_url"] = "https://cdn.plot.ly/plotly-basic-latest.min.js"
+dash_app.scripts.config.serve_locally = False
 
-app.layout = html.Div(
-    [
+dash_app.layout = html.Div(
+    [   
+        html.Script(src="https://cdn.plot.ly/plotly-basic-latest.min.js"),
         html.H1("Stock Tickers"),
         dcc.Dropdown(
             id="my-dropdown",
@@ -38,7 +37,7 @@ app.layout = html.Div(
 )
 
 
-@app.callback(Output("my-graph", "figure"), [Input("my-dropdown", "value")])
+@dash_app.callback(Output("my-graph", "figure"), [Input("my-dropdown", "value")])
 def update_graph(selected_dropdown_value):
     dff = df[df["Stock"] == selected_dropdown_value]
     return {
@@ -50,4 +49,4 @@ def update_graph(selected_dropdown_value):
 
 
 if __name__ == "__main__":
-    app.run_server()
+    dash_app.run_server(debug=True)
