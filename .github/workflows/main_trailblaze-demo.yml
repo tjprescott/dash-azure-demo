@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'trailblaze-demo'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D6F3ACFF052340CAABC01386013E75CC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_006394DDF29047EA83DBEFC43F2FDFF1 }}
