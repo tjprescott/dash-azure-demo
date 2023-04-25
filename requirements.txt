@@ -1,2 +1,16 @@
-Flask==2.0.2
+black                   # used for code formatting
+dash                    # webapp framework
+folium                  # used for map visualization
+flask
+geojson                 # working with geojson files
+geopy                   # used for geocoding
+gpxpy                   # working with gpx files
 gunicorn
+mypy                    # used for static type checking
+pandas                  # required for ploly express
+plotly                  # used for plotting
+psycopg2                # used for connecting to PostgreSQL database
+python-dotenv           # used for loading environment variables
+rdp                     # used for simplifying lines with Ramer–Douglas–Peucker algorithm
+scipy                   # used for spatial analysis
+shapely                 # used for spatial analysis
